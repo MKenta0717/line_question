@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jp.co.logic.repository.FindQuestionGroupRepository">
+    <resultMap id="questionGroup" type="com.jp.co.logic.entity.QuestionGroupEntity">
+        <id property="id" column="group_id"/>
+        <result property="name" column="name" />
+        <collection property="questions" ofType="com.jp.co.logic.entity.QuestionEntity">
+            <id property="id" column="question_id" />
+            <result property="content" column="question_content" />
+            <result property="questionOrder" column="question_order" />
+            <collection property="answers" ofType="com.jp.co.logic.entity.AnswerEntity">
+            	<id property="id" column="answer_id" />
+            	<result property="content" column="answer_content" />
+            	<result property="questionId" column="answers_question_id" />
+            </collection>
+        </collection>
+
+    </resultMap>
+    <select id="execute" resultMap="questionGroup">
+        select
+			qg.id as group_id,
+			qg.name,
+			q.id as question_id,
+			q.content as question_content,
+			qgb.question_order,
+			a.id as answer_id,
+			a.content as answer_content,
+			a.question_id as answers_question_id
+		from
+			t_questions_group_belongs as qgb
+		inner join
+			t_question_group as qg
+		on
+			qgb.question_group_id = qg.id
+		inner join
+			t_question as q
+		on
+			qgb.question_id = q.id
+		inner join
+			t_answer as a
+		on
+			q.id = a.question_id
+		order by
+			group_id,question_id,answer_id;
+    </select>
+</mapper>
